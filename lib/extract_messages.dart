@@ -376,10 +376,9 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
     message.sourcePosition = node.offset;
     message.endPosition = node.end;
     message.arguments = parameters?.parameters
-            .where((element) => element.name?.lexeme != null)
-            .map((x) => x is SimpleFormalParameter ?
-               MessageArgument(type: x.type?.toString(), name: x.name!.lexeme) :
-               MessageArgument(name: x.name!.lexeme))
+            .map((x) => x.name?.lexeme)
+            .where((element) => element != null)
+            .cast<String>()
             .toList() ??
         [];
     var arguments = node.argumentList.arguments;
@@ -544,7 +543,7 @@ class InterpolationVisitor extends SimpleAstVisitor {
   }
 
   void handleSimpleInterpolation(InterpolationExpression node) {
-    var index = arguments.indexWhere((x) => x.name == node.expression.toString());
+    var index = arguments.indexOf(node.expression.toString());
     if (index == -1) {
       throw new IntlMessageExtractionException(
           "Cannot find argument ${node.expression}");
